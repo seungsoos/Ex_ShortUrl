@@ -2,6 +2,8 @@ package org.example.shorturl.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +11,8 @@ import java.util.List;
 @Entity
 @Table(name = "TB_URL")
 @Getter
+@NoArgsConstructor
+@ToString
 public class UrlEntity extends BaseEntity{
 
     @Id
@@ -19,7 +23,7 @@ public class UrlEntity extends BaseEntity{
     @Column(name = "ORIGIN_URL", nullable = false, unique = true)
     private String originUrl;
 
-    @Column(name = "SHORT_URL", nullable = false, unique = true)
+    @Column(name = "SHORT_URL", unique = true)
     private String shortUrl;
 
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "urlEntity", cascade = CascadeType.ALL)
@@ -27,4 +31,12 @@ public class UrlEntity extends BaseEntity{
 
     @OneToMany(mappedBy = "urlEntity")
     private List<UrlCallHistoryEntity> urlCallHistoryEntities = new ArrayList<>();
+
+    public UrlEntity(String originUrl) {
+        this.originUrl = originUrl;
+    }
+
+    public void setShortUrl(String shortUrl) {
+        this.shortUrl = shortUrl;
+    }
 }

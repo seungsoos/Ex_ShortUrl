@@ -11,10 +11,13 @@ public class UrlCountEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "URL_COUNT_ID")
+    @Column(name = "COUNT_ID")
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "URL_ID")
+    @JoinColumn(name = "URL_ID", nullable = false)
     private UrlEntity urlEntity;
+
+    @Column(name = "COUNT", nullable = false)
+    private Long count;
 }

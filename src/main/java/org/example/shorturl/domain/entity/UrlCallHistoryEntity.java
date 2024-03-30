@@ -14,7 +14,7 @@ public class UrlCallHistoryEntity extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "URL_ID")
+    @JoinColumn(name = "URL_ID", nullable = false)
     private UrlEntity urlEntity;
 
 
