@@ -32,7 +32,7 @@ public class UrlRepositoryCustomImpl implements UrlRepositoryCustom{
                 ))
                 .from(urlEntity)
                 .leftJoin(urlEntity.urlCountEntity, urlCountEntity)
-                .on(urlEntity.urlCountEntity.id.eq(urlCountEntity.id))
+                .on(urlEntity.id.eq(urlCountEntity.urlEntity.id))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -41,7 +41,7 @@ public class UrlRepositoryCustomImpl implements UrlRepositoryCustom{
                 .select(urlEntity.count())
                 .from(urlEntity)
                 .leftJoin(urlEntity.urlCountEntity, urlCountEntity)
-                .on(urlEntity.urlCountEntity.id.eq(urlCountEntity.id))
+                .on(urlEntity.id.eq(urlCountEntity.urlEntity.id))
                 .fetchOne();
 
 
