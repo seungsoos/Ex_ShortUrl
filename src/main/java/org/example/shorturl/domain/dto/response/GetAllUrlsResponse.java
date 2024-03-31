@@ -11,14 +11,14 @@ public class GetAllUrlsResponse {
     private Long urlId;
     private String originUrl;
     private String shortUrl;
-    private LocalDateTime createdDate;
     private Long count;
+    private LocalDateTime createdDate;
 
-    public GetAllUrlsResponse(UrlEntity urlEntity, Long count) {
-        this.urlId = urlEntity.getId();
-        this.originUrl = urlEntity.getOriginUrl();
-        this.shortUrl = urlEntity.getShortUrl();
-        this.createdDate = urlEntity.getCreatedDate();
+    public GetAllUrlsResponse(Long urlId, String originUrl, String shortUrl, Long count, LocalDateTime createdDate) {
+        this.urlId = urlId;
+        this.originUrl = originUrl;
+        this.shortUrl = shortUrl;
         this.count = count;
+        this.createdDate = createdDate;
     }
 }

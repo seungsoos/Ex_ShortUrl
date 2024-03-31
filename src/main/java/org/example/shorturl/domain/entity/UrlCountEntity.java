@@ -3,6 +3,7 @@ package org.example.shorturl.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Table(name = "TB_URL_COUNT")

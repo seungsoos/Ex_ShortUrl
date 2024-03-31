@@ -2,10 +2,12 @@ package org.example.shorturl.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.example.shorturl.domain.dto.request.CreateShortUrlRequest;
 import org.example.shorturl.domain.dto.response.GetAllUrlsResponse;
 import org.example.shorturl.domain.enums.UrlType;
 import org.example.shorturl.service.UrlService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,12 +22,14 @@ public class UrlController {
 
     /**
      * URL 전체조회
-     * TYPE - ALL / ORIGIN / SHORT
      */
     @GetMapping("/all")
-    public List<GetAllUrlsResponse> getAllUrls(@RequestParam UrlType urlType) {
-        List<GetAllUrlsResponse> allUrls = urlService.getAllUrls(urlType);
-        return allUrls;
+    public ResponseEntity<Page<GetAllUrlsResponse>> getAllUrls(
+            @RequestParam(value = "viewPage", defaultValue = "0") Integer viewPage
+            , @RequestParam(value = "viewCount", defaultValue = "20") Integer viewCount
+    ) {
+        Page<GetAllUrlsResponse> getAllUrlsResponses = urlService.getAllUrls(viewPage, viewCount);
+        return ResponseEntity.ok().body(getAllUrlsResponses);
     }
 
     /**

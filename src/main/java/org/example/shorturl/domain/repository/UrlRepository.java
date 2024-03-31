@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface UrlRepository extends JpaRepository<UrlEntity, Long> {
+public interface UrlRepository extends JpaRepository<UrlEntity, Long>, UrlRepositoryCustom {
 
     boolean existsByOriginUrl(String originUrl);
 

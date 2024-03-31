@@ -7,10 +7,12 @@ import org.example.shorturl.util.Base62Util;
 import org.example.shorturl.domain.dto.request.CreateShortUrlRequest;
 import org.example.shorturl.domain.dto.response.GetAllUrlsResponse;
 import org.example.shorturl.domain.entity.UrlEntity;
-import org.example.shorturl.domain.enums.UrlType;
 import org.example.shorturl.domain.repository.UrlCallHistoryRepository;
 import org.example.shorturl.domain.repository.UrlCountRepository;
 import org.example.shorturl.domain.repository.UrlRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,10 +32,11 @@ public class UrlServiceImpl implements UrlService {
 
 
     @Override
-    public List<GetAllUrlsResponse> getAllUrls(UrlType urlType) {
-        List<UrlEntity> urlEntityList = urlRepository.findAll();
+    public Page<GetAllUrlsResponse> getAllUrls(Integer viewPage, Integer viewCount) {
+        Pageable pageable = PageRequest.of(viewPage,viewCount);
 
-        return null;
+        Page<GetAllUrlsResponse> getAllUrlsResponses = urlRepository.findAllByUrl(pageable);
+        return getAllUrlsResponses;
     }
 
     @Override
@@ -68,8 +71,6 @@ public class UrlServiceImpl implements UrlService {
         UrlEntity urlEntity = urlRepository.findByShortUrl(redirectUrl)
                 .orElseThrow(() -> new RootException("존재하지않는 URL 정보입니다."));
 
-
-        System.out.println("urlEntity = " + urlEntity);
         return urlEntity.getOriginUrl();
     }
 }
