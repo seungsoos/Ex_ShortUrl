@@ -3,6 +3,9 @@ package org.example.shorturl.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.shorturl.common.exception.RootException;
+import org.example.shorturl.domain.dto.response.GetDetailUrlResponse;
+import org.example.shorturl.domain.entity.UrlCallHistoryEntity;
+import org.example.shorturl.domain.entity.UrlCountEntity;
 import org.example.shorturl.util.Base62Util;
 import org.example.shorturl.domain.dto.request.CreateShortUrlRequest;
 import org.example.shorturl.domain.dto.response.GetAllUrlsResponse;
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -40,8 +44,14 @@ public class UrlServiceImpl implements UrlService {
     }
 
     @Override
-    public void getDetailUrl(Long id) {
+    public List<GetDetailUrlResponse> getDetailUrl(Long id) {
+        UrlEntity urlEntity = urlRepository.findById(id)
+                .orElseThrow(() -> new RootException("존재하지않는 URL 정보입니다."));
 
+        List<UrlCallHistoryEntity> urlCallHistoryEntities = urlCallHistoryRepository.findByUrlEntity(urlEntity);
+        return urlCallHistoryEntities.stream()
+                .map(UrlCallHistoryEntity::toGetDetailUrlResponse)
+                .collect(Collectors.toList());
     }
 
 
@@ -65,12 +75,24 @@ public class UrlServiceImpl implements UrlService {
     }
 
     @Override
+    @Transactional
     public String redirectShortUrl(String shortUrl) {
         String redirectUrl = REDIRECT_URL + shortUrl;
-        System.out.println("redirectUrl = " + redirectUrl);
         UrlEntity urlEntity = urlRepository.findByShortUrl(redirectUrl)
                 .orElseThrow(() -> new RootException("존재하지않는 URL 정보입니다."));
 
+        boolean iExists = urlCountRepository.existsByUrlEntity(urlEntity);
+
+        if (!iExists) {
+            UrlCountEntity urlCountEntity = new UrlCountEntity(urlEntity);
+            urlCountRepository.save(urlCountEntity);
+        } else {
+            UrlCountEntity urlCountEntity = urlEntity.getUrlCountEntity();
+            urlCountEntity.increaseCount();
+        }
+
+        UrlCallHistoryEntity urlCallHistoryEntity = new UrlCallHistoryEntity(urlEntity);
+        urlCallHistoryRepository.save(urlCallHistoryEntity);
         return urlEntity.getOriginUrl();
     }
 }

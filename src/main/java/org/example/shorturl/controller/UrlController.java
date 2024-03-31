@@ -2,10 +2,9 @@ package org.example.shorturl.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.example.shorturl.domain.dto.request.CreateShortUrlRequest;
 import org.example.shorturl.domain.dto.response.GetAllUrlsResponse;
-import org.example.shorturl.domain.enums.UrlType;
+import org.example.shorturl.domain.dto.response.GetDetailUrlResponse;
 import org.example.shorturl.service.UrlService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -36,8 +35,9 @@ public class UrlController {
      * URL 상세조회
      */
     @GetMapping("/detail/{id}")
-    public void getDetailUrl(@PathVariable Long id) {
-
+    public ResponseEntity<List<GetDetailUrlResponse>> getDetailUrl(@PathVariable Long id) {
+        List<GetDetailUrlResponse> getDetailUrlResponses = urlService.getDetailUrl(id);
+        return ResponseEntity.ok().body(getDetailUrlResponses);
     }
 
     /**
