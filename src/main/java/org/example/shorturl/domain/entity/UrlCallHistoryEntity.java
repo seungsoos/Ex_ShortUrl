@@ -2,10 +2,13 @@ package org.example.shorturl.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.example.shorturl.domain.dto.response.GetDetailUrlResponse;
 
 @Entity
 @Table(name = "TB_URL_CALL_HISTORY")
 @Getter
+@NoArgsConstructor
 public class UrlCallHistoryEntity extends BaseEntity {
 
     @Id
@@ -17,5 +20,11 @@ public class UrlCallHistoryEntity extends BaseEntity {
     @JoinColumn(name = "URL_ID", nullable = false)
     private UrlEntity urlEntity;
 
+    public UrlCallHistoryEntity(UrlEntity urlEntity) {
+        this.urlEntity = urlEntity;
+    }
 
+    public GetDetailUrlResponse toGetDetailUrlResponse() {
+        return new GetDetailUrlResponse(this.getUrlEntity().getShortUrl(), this.getCreatedDate());
+    }
 }

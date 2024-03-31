@@ -3,12 +3,13 @@ package org.example.shorturl.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import org.hibernate.annotations.ColumnDefault;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "TB_URL_COUNT")
 @Getter
-public class UrlCountEntity extends BaseEntity {
+@NoArgsConstructor
+public class UrlCountEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,6 +20,16 @@ public class UrlCountEntity extends BaseEntity {
     @JoinColumn(name = "URL_ID", nullable = false)
     private UrlEntity urlEntity;
 
-    @Column(name = "COUNT", nullable = false)
+    @Column(name = "COUNT", nullable = false, columnDefinition = "bigint default 0")
     private Long count;
+
+    public UrlCountEntity(UrlEntity urlEntity) {
+        this.urlEntity = urlEntity;
+        this.count = 0L;
+    }
+
+    public void increaseCount() {
+        this.count += 1;
+    }
+
 }
