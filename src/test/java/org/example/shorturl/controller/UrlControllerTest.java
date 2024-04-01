@@ -1,7 +1,7 @@
-package org.example.shorturl.domain.dto.request;
+package org.example.shorturl.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.shorturl.controller.UrlController;
+import org.example.shorturl.domain.dto.request.CreateShortUrlRequest;
 import org.example.shorturl.service.UrlService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,8 +14,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+
 @WebMvcTest(controllers = UrlController.class)
-class CreateShortUrlRequestTest {
+class UrlControllerTest {
+
 
     @Autowired
     MockMvc mockMvc;
@@ -68,5 +70,6 @@ class CreateShortUrlRequestTest {
                 )
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isInternalServerError());
-        }
+    }
+
 }
