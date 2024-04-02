@@ -27,7 +27,7 @@ public class UrlRepositoryCustomImpl implements UrlRepositoryCustom{
                         urlEntity.id,
                         urlEntity.originUrl,
                         urlEntity.shortUrl,
-                        urlCountEntity.count.coalesce(0L),
+                        urlCountEntity.count,
                         urlEntity.createdDate
                 ))
                 .from(urlEntity)

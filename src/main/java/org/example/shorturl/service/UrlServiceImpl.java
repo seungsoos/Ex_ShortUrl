@@ -3,16 +3,16 @@ package org.example.shorturl.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.shorturl.common.exception.RootException;
+import org.example.shorturl.domain.dto.request.CreateShortUrlRequest;
+import org.example.shorturl.domain.dto.response.GetAllUrlsResponse;
 import org.example.shorturl.domain.dto.response.GetDetailUrlResponse;
 import org.example.shorturl.domain.entity.UrlCallHistoryEntity;
 import org.example.shorturl.domain.entity.UrlCountEntity;
-import org.example.shorturl.util.Base62Util;
-import org.example.shorturl.domain.dto.request.CreateShortUrlRequest;
-import org.example.shorturl.domain.dto.response.GetAllUrlsResponse;
 import org.example.shorturl.domain.entity.UrlEntity;
 import org.example.shorturl.domain.repository.UrlCallHistoryRepository;
 import org.example.shorturl.domain.repository.UrlCountRepository;
 import org.example.shorturl.domain.repository.UrlRepository;
+import org.example.shorturl.util.Base62Util;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -37,10 +37,9 @@ public class UrlServiceImpl implements UrlService {
 
     @Override
     public Page<GetAllUrlsResponse> getAllUrls(Integer viewPage, Integer viewCount) {
-        Pageable pageable = PageRequest.of(viewPage,viewCount);
+        Pageable pageable = PageRequest.of(viewPage, viewCount);
 
-        Page<GetAllUrlsResponse> getAllUrlsResponses = urlRepository.findAllByUrl(pageable);
-        return getAllUrlsResponses;
+        return urlRepository.findAllByUrl(pageable);
     }
 
     @Override
@@ -70,6 +69,10 @@ public class UrlServiceImpl implements UrlService {
 
         String shortUrl = REDIRECT_URL + base62Util.encode(saveUrlEntity.getId());
         saveUrlEntity.setShortUrl(shortUrl);
+
+        UrlCountEntity urlCountEntity = new UrlCountEntity(urlEntity);
+        urlCountRepository.save(urlCountEntity);
+        
         log.info("saveUrlEntity.getId = {}, shortUrl = {}", saveUrlEntity.getId(), shortUrl);
         return shortUrl;
     }
@@ -81,15 +84,8 @@ public class UrlServiceImpl implements UrlService {
         UrlEntity urlEntity = urlRepository.findByShortUrl(redirectUrl)
                 .orElseThrow(() -> new RootException("존재하지않는 URL 정보입니다."));
 
-        boolean iExists = urlCountRepository.existsByUrlEntity(urlEntity);
-
-        if (!iExists) {
-            UrlCountEntity urlCountEntity = new UrlCountEntity(urlEntity);
-            urlCountRepository.save(urlCountEntity);
-        } else {
-            UrlCountEntity urlCountEntity = urlEntity.getUrlCountEntity();
-            urlCountEntity.increaseCount();
-        }
+        UrlCountEntity urlCountEntity = urlEntity.getUrlCountEntity();
+        urlCountEntity.increaseCount();
 
         UrlCallHistoryEntity urlCallHistoryEntity = new UrlCallHistoryEntity(urlEntity);
         urlCallHistoryRepository.save(urlCallHistoryEntity);
