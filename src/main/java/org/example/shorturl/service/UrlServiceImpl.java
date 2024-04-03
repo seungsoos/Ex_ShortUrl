@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional(readOnly = true)
 public class UrlServiceImpl implements UrlService {
 
     private final UrlRepository urlRepository;
@@ -36,6 +35,7 @@ public class UrlServiceImpl implements UrlService {
 
 
     @Override
+    @Transactional(readOnly = true)
     public Page<GetAllUrlsResponse> getAllUrls(Integer viewPage, Integer viewCount) {
         Pageable pageable = PageRequest.of(viewPage, viewCount);
 
@@ -43,6 +43,7 @@ public class UrlServiceImpl implements UrlService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<GetDetailUrlResponse> getDetailUrl(Long id) {
         UrlEntity urlEntity = urlRepository.findById(id)
                 .orElseThrow(() -> new RootException("존재하지않는 URL 정보입니다."));
@@ -53,16 +54,12 @@ public class UrlServiceImpl implements UrlService {
                 .collect(Collectors.toList());
     }
 
-
     @Override
     @Transactional
     public String createShortUrl(CreateShortUrlRequest createShortUrlRequest) {
         String originUrl = createShortUrlRequest.getOriginUrl();
-        boolean result = urlRepository.existsByOriginUrl(originUrl);
-
-        if (result) {
-            throw new RootException("이미 존재하는 URL 입니다.");
-        }
+        boolean exists = urlRepository.existsByOriginUrl(originUrl);
+        isUrlExists(exists);
 
         UrlEntity urlEntity = new UrlEntity(originUrl);
         UrlEntity saveUrlEntity = urlRepository.save(urlEntity);
@@ -90,5 +87,11 @@ public class UrlServiceImpl implements UrlService {
         UrlCallHistoryEntity urlCallHistoryEntity = new UrlCallHistoryEntity(urlEntity);
         urlCallHistoryRepository.save(urlCallHistoryEntity);
         return urlEntity.getOriginUrl();
+    }
+
+    private void isUrlExists(boolean result) {
+        if (result) {
+            throw new RootException("이미 존재하는 URL 입니다.");
+        }
     }
 }
