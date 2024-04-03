@@ -4,11 +4,13 @@ package org.example.shorturl.domain.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "TB_URL_COUNT")
 @Getter
 @NoArgsConstructor
+@Setter
 public class UrlCountEntity {
 
     @Id
@@ -16,7 +18,7 @@ public class UrlCountEntity {
     @Column(name = "COUNT_ID")
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "URL_ID", nullable = false)
     private UrlEntity urlEntity;
 
@@ -26,10 +28,12 @@ public class UrlCountEntity {
     public UrlCountEntity(UrlEntity urlEntity) {
         this.urlEntity = urlEntity;
         this.count = 0L;
+        urlEntity.setUrlCountEntity(this);
     }
 
     public void increaseCount() {
         this.count += 1;
     }
+
 
 }
