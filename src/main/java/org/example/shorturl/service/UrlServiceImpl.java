@@ -78,6 +78,7 @@ public class UrlServiceImpl implements UrlService {
     @Transactional
     public String redirectShortUrl(String shortUrl) {
         String redirectUrl = REDIRECT_URL + shortUrl;
+        System.out.println("redirectUrl = " + redirectUrl);
         UrlEntity urlEntity = urlRepository.findByShortUrl(redirectUrl)
                 .orElseThrow(() -> new RootException("존재하지않는 URL 정보입니다."));
 

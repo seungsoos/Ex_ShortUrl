@@ -1,6 +1,7 @@
 package org.example.shorturl.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.example.shorturl.facade.RedissonLockFacade;
 import org.example.shorturl.service.UrlService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,15 +13,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 public class RedirectController {
 
-    private final UrlService urlService;
-
+    private final RedissonLockFacade redissonLockFacade;
 
     /**
      * ShortURL 접속
      */
     @GetMapping("/{shortUrl}")
     public String redirectShortUrl(@PathVariable String shortUrl) {
-        String redirectShortUrl = urlService.redirectShortUrl(shortUrl);
+        String redirectShortUrl = redissonLockFacade.redirectShortUrl(shortUrl);
 
         return "redirect:" + redirectShortUrl;
     }
