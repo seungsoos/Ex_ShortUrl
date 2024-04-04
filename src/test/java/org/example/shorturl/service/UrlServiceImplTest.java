@@ -2,6 +2,8 @@ package org.example.shorturl.service;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
+import org.example.shorturl.common.exception.RootException;
+import org.example.shorturl.domain.dto.request.CreateShortUrlRequest;
 import org.example.shorturl.domain.dto.response.GetDetailUrlResponse;
 import org.example.shorturl.domain.entity.UrlCallHistoryEntity;
 import org.example.shorturl.domain.entity.UrlCountEntity;
@@ -25,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@Transactional
 class UrlServiceImplTest {
 
     @Autowired
@@ -44,7 +47,6 @@ class UrlServiceImplTest {
 
     @Test
     @DisplayName("URL 상세조회")
-    @Transactional
     void getDetailUrl() {
         // given
         UrlEntity urlEntity = new UrlEntity("https://www.naver.com");
@@ -70,8 +72,24 @@ class UrlServiceImplTest {
     }
 
     @Test
+    @DisplayName("originUrl을 입력시 shortUrl을 반환한다.")
+    void createShortUrl() {
+        // given
+        CreateShortUrlRequest createShortUrlRequest = CreateShortUrlRequest.builder()
+                .originUrl("https://www.naver.com")
+                .build();
+        String shortUrl = urlService.createShortUrl(createShortUrlRequest);
+
+        // when
+        UrlEntity urlEntity = urlRepository.findByShortUrl(shortUrl)
+                .orElseThrow(() -> new RootException("존재하지않는 URL 정보입니다."));
+
+        // then
+        assertThat(shortUrl).isEqualTo(urlEntity.getShortUrl());
+    }
+
+    @Test
     @DisplayName("ShortUrl 호출시 OriginUrl로 반환을 반환하고, UrlCount를 1증가시킨다.")
-    @Transactional
     void redirectShortUrlToOriginUrl() {
         // given
         UrlEntity urlEntity = new UrlEntity("https://www.naver.com");
