@@ -1,7 +1,6 @@
 package org.example.shorturl.service;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityTransaction;
 import org.example.shorturl.common.exception.RootException;
 import org.example.shorturl.domain.dto.request.CreateShortUrlRequest;
 import org.example.shorturl.domain.dto.response.GetDetailUrlResponse;
@@ -11,23 +10,28 @@ import org.example.shorturl.domain.entity.UrlEntity;
 import org.example.shorturl.domain.repository.UrlCallHistoryRepository;
 import org.example.shorturl.domain.repository.UrlCountRepository;
 import org.example.shorturl.domain.repository.UrlRepository;
+import org.example.shorturl.facade.RedissonLockFacade;
 import org.example.shorturl.util.Base62Util;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@Transactional
+//@Transactional
 class UrlServiceImplTest {
 
     @Autowired
@@ -43,7 +47,14 @@ class UrlServiceImplTest {
     String REDIRECT_URL = "http://localhost:8080/redirect/";
 
     @Autowired
-    EntityManager em;
+    RedissonLockFacade redissonLockFacade;
+
+    @AfterEach
+    public void afterEach() {
+        urlCallHistoryRepository.deleteAllInBatch();
+        urlCountRepository.deleteAllInBatch();
+        urlRepository.deleteAllInBatch();
+    }
 
     @Test
     @DisplayName("URL 상세조회")
@@ -107,6 +118,42 @@ class UrlServiceImplTest {
         // then
         assertThat(savedUrlEntity.getOriginUrl()).isEqualTo(originUrl);
         assertThat(urlCountEntity.getCount()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("동시성 이슈")
+    void redirectShortUrl() throws InterruptedException {
+        // given
+        UrlEntity urlEntity = new UrlEntity("https://www.naver.com");
+        String shortUrl = "AAAAAAAB";
+        urlEntity.setShortUrl(REDIRECT_URL + shortUrl);
+        UrlEntity savedUrlEntity = urlRepository.save(urlEntity);
+
+        UrlCountEntity urlCountEntity = new UrlCountEntity(savedUrlEntity);
+        urlCountRepository.save(urlCountEntity);
+
+        int numThreads = 100;
+        ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
+        CountDownLatch countDownLatch = new CountDownLatch(numThreads);
+
+        for (int i = 0; i < 100; i++) {
+            executorService.execute(() -> {
+                try {
+                    String s = redissonLockFacade.redirectShortUrl(shortUrl);
+                    System.out.println("s = " + s);
+                } finally {
+                    countDownLatch.countDown();
+                }
+            });
+        }
+        countDownLatch.await();
+
+        // when
+        UrlEntity dbUrlEntity = urlRepository.findById(urlEntity.getId())
+                .orElseThrow();
+
+        // then
+        assertThat(dbUrlEntity.getUrlCountEntity().getCount()).isEqualTo(100L);
     }
 
 }
