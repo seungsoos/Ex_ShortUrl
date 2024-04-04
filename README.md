@@ -10,7 +10,7 @@
 * URL Redirect
 
 ## 3. 기술스택
-* Java, Spring Boot, Jpa, QueryDsl, Junit
+* Java, Spring Boot, Jpa, QueryDsl, Junit, mySql(Docker)
 
 ## 4. 프로젝트 구성
 ```
