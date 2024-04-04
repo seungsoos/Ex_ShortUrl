@@ -5,12 +5,16 @@
 
 ## 2. 구현 기능
 * URL 전체 조회
+  * URL 정보 및 Count 조회
 * URL 상세 보기
+  * URL 호출 History 조회
 * URL 변환
+  * 원본 URL을 입력하여 Base62로 인코딩하여 ShortUrl을 반환한다.
 * URL Redirect
+  * hortUrl을 입력받아 원본 URL로 Redirect 후 URL 호출 Count를 1증가 시키고, History Table에 저장한다.
 
 ## 3. 기술스택
-* Java, Spring Boot, Jpa, QueryDsl, Junit, mySql(Docker)
+* Java, Spring Boot, Jpa, QueryDsl, Junit, mySql(Docker), Redis
 
 ## 4. 프로젝트 구성
 ```
