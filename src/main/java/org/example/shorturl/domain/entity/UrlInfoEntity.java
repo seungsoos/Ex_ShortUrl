@@ -15,7 +15,7 @@ public class UrlInfoEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "COUNT_ID")
+    @Column(name = "INFO_ID")
     private Long id;
 
     @OneToOne
