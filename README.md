@@ -16,7 +16,11 @@
 * URL Redirect
   * hortUrl을 입력받아 원본 URL로 Redirect 후 URL 호출 Count를 1증가 시키고, History Table에 저장
 
-## 4. 프로젝트 구성
+## 4. ERD
+
+
+<!-- 
+
 ```
 📂 ─ common
 │
@@ -30,5 +34,5 @@
 │
 📂 ─ util
 ```
-
+-->
 
