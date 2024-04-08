@@ -5,34 +5,34 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.*;
 
-class UrlCountEntityTest {
+class UrlInfoEntityTest {
 
     @Test
     @DisplayName("최초 UrlCountEntity 생성시 count 값은 0이다.")
     void init() {
         // given - when
-        UrlCountEntity urlCountEntity = getUrlCountEntity();
+        UrlInfoEntity urlInfoEntity = getUrlInfoEntity();
 
         // then
-        assertThat(urlCountEntity.getCount()).isEqualTo(0);
+        assertThat(urlInfoEntity.getCount()).isEqualTo(0);
     }
 
     @Test
     @DisplayName("ShortUrl 호출시 Count 1 증가한다.")
     void increaseCount() {
         // given
-        UrlCountEntity urlCountEntity = getUrlCountEntity();
+        UrlInfoEntity urlInfoEntity = getUrlInfoEntity();
 
         // when
-        urlCountEntity.increaseCount();
+        urlInfoEntity.increaseCount();
 
         // then
-        assertThat(urlCountEntity.getCount()).isEqualTo(1);
+        assertThat(urlInfoEntity.getCount()).isEqualTo(1);
     }
 
-    private UrlCountEntity getUrlCountEntity() {
+    private UrlInfoEntity getUrlInfoEntity() {
         UrlEntity urlEntity = new UrlEntity("https://www.naver.com");
-        UrlCountEntity urlCountEntity = new UrlCountEntity(urlEntity);
-        return urlCountEntity;
+        UrlInfoEntity urlInfoEntity = new UrlInfoEntity(urlEntity);
+        return urlInfoEntity;
     }
 }

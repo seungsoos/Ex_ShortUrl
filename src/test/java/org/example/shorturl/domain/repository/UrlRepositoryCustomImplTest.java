@@ -3,7 +3,7 @@ package org.example.shorturl.domain.repository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.example.shorturl.domain.dto.response.GetAllUrlsResponse;
-import org.example.shorturl.domain.entity.UrlCountEntity;
+import org.example.shorturl.domain.entity.UrlInfoEntity;
 import org.example.shorturl.domain.entity.UrlEntity;
 import org.example.shorturl.util.Base62Util;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,7 +31,7 @@ class UrlRepositoryCustomImplTest {
     @Autowired
     UrlRepository urlRepository;
     @Autowired
-    UrlCountRepository urlCountRepository;
+    UrlInfoRepository urlInfoRepository;
     @Autowired
     Base62Util base62Util;
     private final String REDIRECT_URL = "http://localhost:8080/redirect/";
@@ -62,16 +62,16 @@ class UrlRepositoryCustomImplTest {
                         }
                 );
 
-        UrlCountEntity urlCountEntity1 = new UrlCountEntity(urlEntity1);
-        urlCountEntity1.increaseCount();
-        UrlCountEntity urlCountEntity2 = new UrlCountEntity(urlEntity2);
-        urlCountEntity2.increaseCount();
-        UrlCountEntity urlCountEntity3 = new UrlCountEntity(urlEntity3);
-        urlCountEntity3.increaseCount();
-        UrlCountEntity urlCountEntity4 = new UrlCountEntity(urlEntity4);
-        UrlCountEntity urlCountEntity5 = new UrlCountEntity(urlEntity5);
+        UrlInfoEntity urlInfoEntity1 = new UrlInfoEntity(urlEntity1);
+        urlInfoEntity1.increaseCount();
+        UrlInfoEntity urlInfoEntity2 = new UrlInfoEntity(urlEntity2);
+        urlInfoEntity2.increaseCount();
+        UrlInfoEntity urlInfoEntity3 = new UrlInfoEntity(urlEntity3);
+        urlInfoEntity3.increaseCount();
+        UrlInfoEntity urlInfoEntity4 = new UrlInfoEntity(urlEntity4);
+        UrlInfoEntity urlInfoEntity5 = new UrlInfoEntity(urlEntity5);
 
-        urlCountRepository.saveAll(List.of(urlCountEntity1, urlCountEntity2, urlCountEntity3, urlCountEntity4, urlCountEntity5));
+        urlInfoRepository.saveAll(List.of(urlInfoEntity1, urlInfoEntity2, urlInfoEntity3, urlInfoEntity4, urlInfoEntity5));
 
         Pageable pageable = PageRequest.of(0,20);
         // when

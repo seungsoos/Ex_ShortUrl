@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static org.example.shorturl.domain.entity.QUrlCountEntity.urlCountEntity;
+import static org.example.shorturl.domain.entity.QUrlInfoEntity.urlInfoEntity;
 import static org.example.shorturl.domain.entity.QUrlEntity.urlEntity;
 
 @Repository
@@ -27,12 +27,12 @@ public class UrlRepositoryCustomImpl implements UrlRepositoryCustom{
                         urlEntity.id,
                         urlEntity.originUrl,
                         urlEntity.shortUrl,
-                        urlCountEntity.count,
+                        urlInfoEntity.count,
                         urlEntity.createdDate
                 ))
                 .from(urlEntity)
-                .leftJoin(urlEntity.urlCountEntity, urlCountEntity)
-                .on(urlEntity.id.eq(urlCountEntity.urlEntity.id))
+                .leftJoin(urlEntity.urlInfoEntity, urlInfoEntity)
+                .on(urlEntity.id.eq(urlInfoEntity.urlEntity.id))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -40,8 +40,8 @@ public class UrlRepositoryCustomImpl implements UrlRepositoryCustom{
         Long countQuery = queryFactory
                 .select(urlEntity.count())
                 .from(urlEntity)
-                .leftJoin(urlEntity.urlCountEntity, urlCountEntity)
-                .on(urlEntity.id.eq(urlCountEntity.urlEntity.id))
+                .leftJoin(urlEntity.urlInfoEntity, urlInfoEntity)
+                .on(urlEntity.id.eq(urlInfoEntity.urlEntity.id))
                 .fetchOne();
 
 

@@ -7,10 +7,10 @@ import org.example.shorturl.domain.dto.request.CreateShortUrlRequest;
 import org.example.shorturl.domain.dto.response.GetAllUrlsResponse;
 import org.example.shorturl.domain.dto.response.GetDetailUrlResponse;
 import org.example.shorturl.domain.entity.UrlCallHistoryEntity;
-import org.example.shorturl.domain.entity.UrlCountEntity;
+import org.example.shorturl.domain.entity.UrlInfoEntity;
 import org.example.shorturl.domain.entity.UrlEntity;
 import org.example.shorturl.domain.repository.UrlCallHistoryRepository;
-import org.example.shorturl.domain.repository.UrlCountRepository;
+import org.example.shorturl.domain.repository.UrlInfoRepository;
 import org.example.shorturl.domain.repository.UrlRepository;
 import org.example.shorturl.util.Base62Util;
 import org.springframework.data.domain.Page;
@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 public class UrlServiceImpl implements UrlService {
 
     private final UrlRepository urlRepository;
-    private final UrlCountRepository urlCountRepository;
+    private final UrlInfoRepository urlInfoRepository;
     private final UrlCallHistoryRepository urlCallHistoryRepository;
     private final Base62Util base62Util;
     private final String REDIRECT_URL = "http://localhost:8080/redirect/";
@@ -67,8 +67,8 @@ public class UrlServiceImpl implements UrlService {
         String shortUrl = REDIRECT_URL + base62Util.encode(saveUrlEntity.getId());
         saveUrlEntity.setShortUrl(shortUrl);
 
-        UrlCountEntity urlCountEntity = new UrlCountEntity(urlEntity);
-        urlCountRepository.save(urlCountEntity);
+        UrlInfoEntity urlInfoEntity = new UrlInfoEntity(urlEntity);
+        urlInfoRepository.save(urlInfoEntity);
         
         log.info("saveUrlEntity.getId = {}, shortUrl = {}", saveUrlEntity.getId(), shortUrl);
         return shortUrl;
@@ -82,8 +82,8 @@ public class UrlServiceImpl implements UrlService {
         UrlEntity urlEntity = urlRepository.findByShortUrl(redirectUrl)
                 .orElseThrow(() -> new RootException("존재하지않는 URL 정보입니다."));
 
-        UrlCountEntity urlCountEntity = urlEntity.getUrlCountEntity();
-        urlCountEntity.increaseCount();
+        UrlInfoEntity urlInfoEntity = urlEntity.getUrlInfoEntity();
+        urlInfoEntity.increaseCount();
 
         UrlCallHistoryEntity urlCallHistoryEntity = new UrlCallHistoryEntity(urlEntity);
         urlCallHistoryRepository.save(urlCallHistoryEntity);

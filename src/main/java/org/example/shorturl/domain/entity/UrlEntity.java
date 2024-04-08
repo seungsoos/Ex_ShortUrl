@@ -29,7 +29,7 @@ public class UrlEntity extends BaseEntity{
     private String shortUrl;
 
     @OneToOne(mappedBy = "urlEntity")
-    private UrlCountEntity urlCountEntity;
+    private UrlInfoEntity urlInfoEntity;
 
     @OneToMany(mappedBy = "urlEntity")
     private List<UrlCallHistoryEntity> urlCallHistoryEntities = new ArrayList<>();

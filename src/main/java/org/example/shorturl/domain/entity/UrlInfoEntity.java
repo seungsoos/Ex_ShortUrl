@@ -7,11 +7,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "TB_URL_COUNT")
+@Table(name = "TB_URL_INFO")
 @Getter
 @NoArgsConstructor
 @Setter
-public class UrlCountEntity {
+public class UrlInfoEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,10 +25,10 @@ public class UrlCountEntity {
     @Column(name = "COUNT", nullable = false, columnDefinition = "bigint default 0")
     private Long count;
 
-    public UrlCountEntity(UrlEntity urlEntity) {
+    public UrlInfoEntity(UrlEntity urlEntity) {
         this.urlEntity = urlEntity;
         this.count = 0L;
-        urlEntity.setUrlCountEntity(this);
+        urlEntity.setUrlInfoEntity(this);
     }
 
     public void increaseCount() {

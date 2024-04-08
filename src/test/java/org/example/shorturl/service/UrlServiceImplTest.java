@@ -1,25 +1,22 @@
 package org.example.shorturl.service;
 
-import jakarta.persistence.EntityManager;
 import org.example.shorturl.common.exception.RootException;
 import org.example.shorturl.domain.dto.request.CreateShortUrlRequest;
 import org.example.shorturl.domain.dto.response.GetDetailUrlResponse;
 import org.example.shorturl.domain.entity.UrlCallHistoryEntity;
-import org.example.shorturl.domain.entity.UrlCountEntity;
+import org.example.shorturl.domain.entity.UrlInfoEntity;
 import org.example.shorturl.domain.entity.UrlEntity;
 import org.example.shorturl.domain.repository.UrlCallHistoryRepository;
-import org.example.shorturl.domain.repository.UrlCountRepository;
+import org.example.shorturl.domain.repository.UrlInfoRepository;
 import org.example.shorturl.domain.repository.UrlRepository;
 import org.example.shorturl.facade.RedissonLockFacade;
 import org.example.shorturl.util.Base62Util;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -39,7 +36,7 @@ class UrlServiceImplTest {
     @Autowired
     UrlRepository urlRepository;
     @Autowired
-    UrlCountRepository urlCountRepository;
+    UrlInfoRepository urlInfoRepository;
     @Autowired
     UrlCallHistoryRepository urlCallHistoryRepository;
     @Autowired
@@ -52,7 +49,7 @@ class UrlServiceImplTest {
     @AfterEach
     public void afterEach() {
         urlCallHistoryRepository.deleteAllInBatch();
-        urlCountRepository.deleteAllInBatch();
+        urlInfoRepository.deleteAllInBatch();
         urlRepository.deleteAllInBatch();
     }
 
@@ -100,14 +97,14 @@ class UrlServiceImplTest {
     }
 
     @Test
-    @DisplayName("ShortUrl 호출시 OriginUrl로 반환을 반환하고, UrlCount를 1증가시킨다.")
+    @DisplayName("ShortUrl 호출시 OriginUrl로 반환을 반환하고, UrlInfo를 1증가시킨다.")
     void redirectShortUrlToOriginUrl() {
         // given
         UrlEntity urlEntity = new UrlEntity("https://www.naver.com");
         UrlEntity savedUrlEntity = urlRepository.save(urlEntity);
 
-        UrlCountEntity urlCountEntity = new UrlCountEntity(savedUrlEntity);
-        urlCountRepository.save(urlCountEntity);
+        UrlInfoEntity urlInfoEntity = new UrlInfoEntity(savedUrlEntity);
+        urlInfoRepository.save(urlInfoEntity);
 
         String shortUrl = "AAAAAAAB";
         urlEntity.setShortUrl(REDIRECT_URL + shortUrl);
@@ -117,7 +114,7 @@ class UrlServiceImplTest {
 
         // then
         assertThat(savedUrlEntity.getOriginUrl()).isEqualTo(originUrl);
-        assertThat(urlCountEntity.getCount()).isEqualTo(1);
+        assertThat(urlInfoEntity.getCount()).isEqualTo(1);
     }
 
     @Test
@@ -129,8 +126,8 @@ class UrlServiceImplTest {
         urlEntity.setShortUrl(REDIRECT_URL + shortUrl);
         UrlEntity savedUrlEntity = urlRepository.save(urlEntity);
 
-        UrlCountEntity urlCountEntity = new UrlCountEntity(savedUrlEntity);
-        urlCountRepository.save(urlCountEntity);
+        UrlInfoEntity urlInfoEntity = new UrlInfoEntity(savedUrlEntity);
+        urlInfoRepository.save(urlInfoEntity);
 
         int numThreads = 100;
         ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
@@ -153,7 +150,7 @@ class UrlServiceImplTest {
                 .orElseThrow();
 
         // then
-        assertThat(dbUrlEntity.getUrlCountEntity().getCount()).isEqualTo(100L);
+        assertThat(dbUrlEntity.getUrlInfoEntity().getCount()).isEqualTo(100L);
     }
 
 }
